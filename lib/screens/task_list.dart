@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_flutter/models/task.dart';
@@ -5,8 +7,36 @@ import 'package:todo_flutter/providers/agenda_provider.dart';
 import 'package:todo_flutter/widgets/forms/task_form.dart';
 import 'package:todo_flutter/widgets/tiles/task_tile.dart';
 
-class TaskListScreen extends StatelessWidget {
-  const TaskListScreen({super.key});
+class TaskList extends StatefulWidget {
+  const TaskList({super.key});
+
+  @override
+  State<TaskList> createState() => _TaskListState();
+}
+
+class _TaskListState extends State<TaskList> {
+  late Timer _refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Refresh the task list every 5 seconds
+    _refreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      setState(() {
+        // Trigger a rebuild to refresh the task list
+        // This will call the build method again
+        // We do this to recalculate the elapsed time for tasks
+        // and update any dynamic properties that depend on time
+        // TODO: Consider optimizing this if performance becomes an issue
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
