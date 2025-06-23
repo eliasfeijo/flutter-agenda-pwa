@@ -73,18 +73,16 @@ class TaskTile extends StatelessWidget {
         shape: BoxShape.rectangle,
       ),
       child: Center(
-        child: Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Tooltip(
-              message: "${priority.displayName} Priority",
-              child: Text(
-                priority.displayName,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
-                ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Tooltip(
+            message: "${priority.displayName} Priority",
+            child: Text(
+              priority.displayName,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 8,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
