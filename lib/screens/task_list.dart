@@ -30,6 +30,12 @@ class _TaskListState extends State<TaskList> {
         // TODO: Consider optimizing this if performance becomes an issue
       });
     });
+
+    // Load initial tasks
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final agenda = Provider.of<AgendaProvider>(context, listen: false);
+      agenda.loadTasks();
+    });
   }
 
   @override

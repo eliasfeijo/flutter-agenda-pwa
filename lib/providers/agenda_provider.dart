@@ -1,12 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:todo_flutter/models/task.dart';
+import 'package:todo_flutter/repositories/tasks_repository.dart';
 
 class AgendaProvider extends ChangeNotifier {
   // Private fields
+  final TasksRepository _repository;
+
   final List<TaskModel> _tasks = [];
   TaskModel? _selectedTask;
   String _searchQuery = '';
   TaskFilter _currentFilter = TaskFilter.all;
+
+  // Constructor
+  AgendaProvider(this._repository);
 
   // Getters
   List<TaskModel> get tasks => List.unmodifiable(_tasks);
@@ -56,50 +62,64 @@ class AgendaProvider extends ChangeNotifier {
   int get todayTasksCount => _tasks.where((task) => task.isToday).length;
   int get overdueTasksCount => _tasks.where((task) => task.isOverdue).length;
 
-  // Task Management Methods
-  void addTask(TaskModel task) {
-    _tasks.add(task);
+  // Setters
+
+  // Sets the list of tasks and notifies listeners.
+  set tasks(List<TaskModel> tasks) {
+    _tasks.clear();
+    _tasks.addAll(tasks);
     notifyListeners();
   }
 
-  void updateTask(TaskModel updatedTask) {
+  // Methods
+
+  // Loading from repository
+  Future<void> loadTasks() async {
+    final storedTasks = await _repository.loadTasks();
+    _tasks
+      ..clear()
+      ..addAll(storedTasks);
+    notifyListeners();
+  }
+
+  // Task Management Methods
+  Future<void> addTask(TaskModel task) async {
+    _tasks.add(task);
+    await _repository.saveTasks(_tasks);
+    notifyListeners();
+  }
+
+  Future<void> updateTask(TaskModel updatedTask) async {
     final index = _tasks.indexWhere((task) => task.id == updatedTask.id);
     if (index != -1) {
       _tasks[index] = updatedTask;
-
-      // Update selected task if it's the same task
-      if (_selectedTask?.id == updatedTask.id) {
-        _selectedTask = updatedTask;
-      }
-
+      await _repository.saveTasks(_tasks);
       notifyListeners();
     }
   }
 
-  void deleteTask(String taskId) {
-    // final taskToDelete = _tasks.firstWhere((task) => task.id == taskId);
+  Future<void> deleteTask(String taskId) async {
     _tasks.removeWhere((task) => task.id == taskId);
-
-    // Clear selection if deleted task was selected
     if (_selectedTask?.id == taskId) {
-      _selectedTask = null;
+      _selectedTask = null; // Clear selection if deleted task was selected
     }
-
+    await _repository.saveTasks(_tasks);
     notifyListeners();
   }
 
-  void toggleTaskCompletion(String taskId) {
-    final taskIndex = _tasks.indexWhere((task) => task.id == taskId);
-    if (taskIndex != -1) {
-      _tasks[taskIndex].toggleCompletion();
-
-      // Update selected task if it's the same task
-      if (_selectedTask?.id == taskId) {
-        _selectedTask = _tasks[taskIndex];
-      }
-
+  Future<void> toggleTaskCompletion(String taskId) async {
+    final index = _tasks.indexWhere((task) => task.id == taskId);
+    if (index != -1) {
+      _tasks[index].toggleCompletion();
+      await _repository.saveTasks(_tasks);
       notifyListeners();
     }
+  }
+
+  Future<void> clearAllTasks() async {
+    _tasks.clear();
+    await _repository.clearTasks();
+    notifyListeners();
   }
 
   // Selected Task Management

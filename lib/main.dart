@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:todo_flutter/providers/agenda_provider.dart';
+import 'package:todo_flutter/repositories/tasks_repository.dart';
 import 'package:todo_flutter/screens/task_list.dart';
 
 void main() {
@@ -14,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => AgendaProvider(),
+      create: (context) => AgendaProvider(TasksSharedPreferencesRepository()),
       child: MaterialApp(
         title: 'Task Manager',
         theme: ThemeData(
