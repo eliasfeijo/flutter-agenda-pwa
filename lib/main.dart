@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => AgendaProvider(TasksSharedPreferencesRepository()),
       child: MaterialApp(
-        title: 'Task Manager',
+        title: 'Agenda',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         ),
